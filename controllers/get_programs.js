@@ -9,9 +9,7 @@ async function get_programs(cb) {
   snap.docs.forEach((d) => {
     docs.push({ ...d.data(), id: d.id });
   });
-  console.log(docs);
   return docs;
-  // cb(docs);
 }
 
 export { get_programs };
