@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 import { get_programs } from "../controllers/get_programs";
 
 const ProgramList = () => {
@@ -21,14 +21,14 @@ const ProgramList = () => {
           {item.wo_groups.map((child, index) => {
             if (clickable_children) {
               return (
-                <Text
+                <Pressable
                   key={index}
                   style={styles.woGroupText}
                   onPress={() => {
                     console.log("navigate to wo_group", child.id);
                   }}>
-                  {child.name}
-                </Text>
+                  <Text>{child.name}</Text>
+                </Pressable>
               );
             } else {
               return (
