@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import { useTheme } from "@react-navigation/native";
 import { get_programs } from "../controllers/get_programs";
 
-const ProgramList = () => {
+const ProgramList = ({ navigation }) => {
   const [programs, setPrograms] = useState([]);
+  const { colors } = useTheme();
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -13,30 +15,38 @@ const ProgramList = () => {
     fetchPrograms();
   }, []);
 
-  const ProgramItem = ({ item, clickable_children }) => (
+  const ProgramItem = ({ item }) => (
     <View style={styles.programItemContainer}>
-      <Text style={styles.programItemName}>{item.name}</Text>
+      <Text style={{ color: colors.text, ...styles.programItemName }}>{item.name}</Text>
       {item.wo_groups && item.wo_groups.length > 0 && (
         <View style={styles.woGroupsContiner}>
-          {item.wo_groups.map((child, index) => {
-            if (clickable_children) {
-              return (
-                <Pressable
-                  key={index}
-                  style={styles.woGroupText}
-                  onPress={() => {
-                    console.log("navigate to wo_group", child.id);
-                  }}>
-                  <Text>{child.name}</Text>
-                </Pressable>
-              );
-            } else {
-              return (
-                <Text key={index} style={styles.woGroupText}>
-                  {child.name}
+          {item.wo_groups.map((group, index) => {
+            const workouts = JSON.parse(group.workouts);
+            return (
+              <>
+                <Text key={item.name + group.name} style={{ color: colors.text, ...styles.woGroupText }}>
+                  {group.name}
                 </Text>
-              );
-            }
+                {workouts.length > 0 && (
+                  <View style={styles.woGroupsContiner}>
+                    {workouts.map((wo, index) => {
+                      {
+                        /* console.log("wo", wo.exercise); */
+                      }
+                      return (
+                        <Pressable
+                          key={wo.group + item.name + group.name}
+                          onPress={() => {
+                            navigation.navigate("Exercises", { exercise: wo.exercise });
+                          }}>
+                          <Text style={{ color: colors.text, ...styles.woGroupText }}>{wo.group}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </>
+            );
           })}
         </View>
       )}
@@ -46,7 +56,7 @@ const ProgramList = () => {
   return (
     <FlatList
       data={programs}
-      renderItem={({ item }) => <ProgramItem item={item} clickable_children={true} />}
+      renderItem={({ item }) => <ProgramItem item={item} />}
       keyExtractor={(item) => item.id.toString()}
     />
   );
@@ -57,25 +67,29 @@ const styles = StyleSheet.create({
     padding: 13,
   },
   programItemName: {
-    color: "#eee",
     fontSize: 28,
     fontWeight: "bold",
   },
   woGroupsContiner: {
-    marginLeft: 20,
+    marginLeft: 12,
   },
   woGroupText: {
-    color: "#eee",
-    fontSize: 22,
-    marginTop: 28,
+    fontSize: 25,
+    marginTop: 12,
     borderWidth: 0.1, // sets the width of the border
-    borderColor: "#fff", // sets the color of the border
+    // borderColor: "#fff", // sets the color of the border
     borderRadius: 5,
-    shadowColor: "#fff", // sets the color of the shadow
-    shadowOffset: { width: 0, height: 2 }, // sets the offset of the shadow
-    shadowOpacity: 0.5, // increase this to make the shadow more visible
-    shadowRadius: 15, // increase this to make the shadow fuzzier
+    // shadowColor: "#fff", // sets the color of the shadow
+    // shadowOffset: { width: 0, height: 2 }, // sets the offset of the shadow
+    // shadowOpacity: 0.5, // increase this to make the shadow more visible
+    // shadowRadius: 15, // increase this to make the shadow fuzzier
     padding: 10, // add some padding around the text
+  },
+  clickable: {
+    fontSize: 22,
+    marginTop: 15,
+    marginLeft: 15,
+    padding: 14,
   },
 });
 
