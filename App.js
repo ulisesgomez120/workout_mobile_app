@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // program list should be in a program view component
 import ProgramList from "./views/programs";
 import Exercises from "./views/exercises";
+import Exercise from "./views/exercise";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ export default function App() {
       <Stack.Navigator initialRouteName='Programs'>
         <Stack.Screen name='Programs' component={ProgramList} />
         <Stack.Screen name='Exercises' component={Exercises} />
+        <Stack.Screen name='Exercise' component={Exercise} options={({ route }) => ({ title: route.params.name })} />
       </Stack.Navigator>
     </NavigationContainer>
   );

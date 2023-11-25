@@ -30,14 +30,11 @@ const ProgramList = ({ navigation }) => {
                 {workouts.length > 0 && (
                   <View style={styles.woGroupsContiner}>
                     {workouts.map((wo, index) => {
-                      {
-                        /* console.log("wo", wo.exercise); */
-                      }
                       return (
                         <Pressable
                           key={wo.group + item.name + group.name}
                           onPress={() => {
-                            navigation.navigate("Exercises", { exercise: wo.exercise });
+                            navigation.navigate("Exercises", { exercises: wo.exercise });
                           }}>
                           <Text style={{ color: colors.text, ...styles.woGroupText }}>{wo.group}</Text>
                         </Pressable>

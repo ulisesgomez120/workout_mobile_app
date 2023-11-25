@@ -2,23 +2,26 @@ import React from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from "react-native";
 
 const Exercises = ({ navigation, route }) => {
-  const { exercise } = route.params;
-  // console.log("wo_group_id", wo_group_id);
-  // const wo = JSON.parse(workouts);
-  // console.log("workouts", typeof wo);
-  // console.log(exercise);
+  const { exercises } = route.params;
   const WorkoutItem = ({ item }) => {
-    // console.log("item", item);
     return (
-      <View style={styles.workoutItemContainer}>
+      <Pressable
+        style={styles.workoutItemContainer}
+        key={item.id}
+        onPress={() => {
+          navigation.navigate("Exercise", { exercise: item, name: item.name });
+        }}>
         <Text style={styles.workoutItemName}>{item.name}</Text>
-      </View>
+      </Pressable>
     );
   };
 
   return (
-    <FlatList data={exercise} renderItem={({ item }) => <WorkoutItem item={item} />} keyExtractor={(item) => item.id} />
-    // <Text>Workouts</Text>
+    <FlatList
+      data={exercises}
+      renderItem={({ item }) => <WorkoutItem item={item} />}
+      keyExtractor={(item) => item.id}
+    />
   );
 };
 
