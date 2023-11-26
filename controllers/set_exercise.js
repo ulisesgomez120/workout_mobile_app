@@ -1,11 +1,17 @@
-import { db } from "./firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
-const addExerciseToFirestore = async (exerciseData) => {
+const add_completed_exercise = async (exercise) => {
   try {
-    const docRef = await addDoc(collection(db, "exercises"), exerciseData);
+    if (!exercise) {
+      return;
+    }
+    exercise["created_on"] = Timestamp.now();
+    const docRef = await addDoc(collection(db, "past_workouts"), exercise);
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     console.error("Error adding document: ", e);
   }
 };
+
+export { add_completed_exercise };

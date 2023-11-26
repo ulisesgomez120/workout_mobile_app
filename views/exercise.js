@@ -1,6 +1,8 @@
-import React, { useReducer } from "react";
-import { View, Text, Button, TextInput, FlatList } from "react-native";
+import React, { useReducer, useEffect } from "react";
+import { View, Text, Button, TextInput, FlatList, ScrollView } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { add_completed_exercise } from "../controllers/set_exercise";
+import { get_history } from "../controllers/get_exercise_history";
 
 const initialState = {
   // timer: 0,
@@ -9,9 +11,9 @@ const initialState = {
   weight: "",
   reps: "",
   rpe: "",
-  altName: "",
+  alt_name: "",
   notes: "",
-  // workoutHistory: [],
+  workoutHistory: [],
 };
 // const formatTime = (time) => {
 //   const minutes = Math.floor(time / 60);
@@ -31,11 +33,11 @@ const reducer = (state, action) => {
     case "SET_RPE":
       return { ...state, rpe: action.payload };
     case "SET_ALT_NAME":
-      return { ...state, altName: action.payload };
+      return { ...state, alt_name: action.payload };
     case "SET_NOTES":
       return { ...state, notes: action.payload };
-    // case "SET_WORKOUT_HISTORY":
-    //   return { ...state, workoutHistory: action.payload };
+    case "SET_WORKOUT_HISTORY":
+      return { ...state, workoutHistory: action.payload };
     // case "SET_TIMER_DISPLAY":
     //   return { ...state, timerDisplay: formatTime(state.timer) };
     default:
@@ -47,7 +49,15 @@ const ExercisePage = ({ navigation, route }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { colors } = useTheme();
   const { exercise } = route.params;
-
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const history = await get_history(exercise.id);
+      console.log("history", history);
+      dispatch({ type: "SET_WORKOUT_HISTORY", payload: history });
+    };
+    fetchHistory();
+  }, []);
+  // console.log(exercise);
   // const handleTimerToggle = () => {
   //   if (state.isTimerRunning) {
   //     dispatch({ type: "SET_TIMER", payload: 0 });
@@ -71,10 +81,12 @@ const ExercisePage = ({ navigation, route }) => {
       weight: state.weight,
       reps: state.reps,
       rpe: state.rpe,
-      altName: state.altName,
-      notes: state.notes,
-      date: new Date().toLocaleDateString(),
+      alt_name: state.alt_name,
+      notes: state.notes.trim(),
+      type: "working",
+      workout_id: exercise.id,
     };
+    add_completed_exercise(workout);
     // dispatch((prevState) => ({ type: "SET_WORKOUT_HISTORY", payload: [...prevState.workoutHistory, workout] }));
     dispatch({ type: "SET_WEIGHT", payload: "" });
     dispatch({ type: "SET_REPS", payload: "" });
@@ -89,13 +101,13 @@ const ExercisePage = ({ navigation, route }) => {
   //     <Text>Weight: {item.weight}</Text>
   //     <Text>Reps: {item.reps}</Text>
   //     <Text>RPE: {item.rpe}</Text>
-  //     <Text>Alternate Name: {item.altName}</Text>
+  //     <Text>Alternate Name: {item.alt_name}</Text>
   //     <Text>Notes: {item.notes}</Text>
   //   </View>
   // );
 
   return (
-    <View>
+    <ScrollView>
       <View>
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <View style={{ padding: 20 }}>
@@ -149,7 +161,7 @@ const ExercisePage = ({ navigation, route }) => {
         <TextInput
           style={styles.workoutInput}
           placeholder='Alternate Name'
-          value={state.altName}
+          value={state.alt_name}
           onChangeText={(text) => dispatch({ type: "SET_ALT_NAME", payload: text })}
         />
         <TextInput
@@ -170,7 +182,7 @@ const ExercisePage = ({ navigation, route }) => {
           keyExtractor={(item, index) => index.toString()}
         />
       </View> */}
-    </View>
+    </ScrollView>
   );
 };
 

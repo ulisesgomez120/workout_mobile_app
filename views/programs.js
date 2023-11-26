@@ -53,7 +53,7 @@ const ProgramList = ({ navigation }) => {
   return (
     <FlatList
       data={programs}
-      renderItem={({ item }) => <ProgramItem item={item} />}
+      renderItem={({ item }) => <ProgramItem item={item} key={item.name} />}
       keyExtractor={(item) => item.name}
     />
   );
