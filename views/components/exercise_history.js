@@ -3,22 +3,21 @@ import { View, Text, Button, TextInput, FlatList, ScrollView } from "react-nativ
 import { useTheme } from "@react-navigation/native";
 
 const ExerciseHistory = ({ history }) => {
-  console.log("history 5", history);
   const { colors } = useTheme();
   const grouped_by_date = history.reduce((acc, cur) => {
     (acc[cur.date] = acc[cur.date] || []).push(cur);
     return acc;
   }, {});
 
-  const sortedByDate = Object.entries(grouped_by_date).sort((a, b) => new Date(b[0]) - new Date(a[0]));
+  const sorted_by_date = Object.entries(grouped_by_date).sort((a, b) => new Date(b[0]) - new Date(a[0]));
   return (
     <View>
-      {sortedByDate.map(([date, items]) => (
-        <View key={date}>
-          <Text style={{ color: colors.text }}>{date}</Text>
+      {sorted_by_date.map(([date, items]) => (
+        <View key={date} style={styles.workout_item_container}>
+          <Text style={{ color: colors.text, ...styles.exercise_date }}>{date}</Text>
           {items.map((item) => (
-            <Text key={item.id} style={{ color: colors.text }}>
-              {item.reps} x {item.weight} -- {item.type} - {item.notes}
+            <Text key={item.id} style={{ color: colors.text, ...styles.exercise }}>
+              {item.weight} x {item.reps} -- {item.type} - {item.notes}
             </Text>
           ))}
         </View>
@@ -28,3 +27,18 @@ const ExerciseHistory = ({ history }) => {
 };
 
 export default ExerciseHistory;
+
+const styles = {
+  workout_item_container: {
+    padding: 13,
+  },
+  exercise_date: {
+    fontSize: 24,
+    paddingBottom: 10,
+  },
+  exercise: {
+    fontSize: 20,
+    paddingBottom: 6,
+    paddingLeft: 8,
+  },
+};
