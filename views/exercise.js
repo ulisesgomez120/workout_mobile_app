@@ -4,29 +4,19 @@ import { useTheme } from "@react-navigation/native";
 import { add_completed_exercise } from "../controllers/set_exercise";
 import { get_history } from "../controllers/get_exercise_history";
 import ExerciseHistory from "./components/exercise_history";
+import Timer from "./components/timer";
 
 const initialState = {
-  // timer: 0,
-  // timerDisplay: "00:00",
-  // isTimerRunning: false,
-  weight: "",
-  reps: "",
-  rpe: "",
+  weight: "0",
+  reps: "0",
+  rpe: "0",
   alt_name: "",
   notes: "",
   workout_history: [],
 };
-// const formatTime = (time) => {
-//   const minutes = Math.floor(time / 60);
-//   const seconds = time % 60;
-//   return minutes.toString().padStart(2, 0) + ":" + seconds.toString().padStart(2, 0);
-// };
+
 const reducer = (state, action) => {
   switch (action.type) {
-    // case "SET_TIMER":
-    //   return { ...state, timer: state.timer + 1 };
-    // case "SET_IS_TIMER_RUNNING":
-    //   return { ...state, isTimerRunning: action.payload };
     case "SET_WEIGHT":
       return { ...state, weight: action.payload };
     case "SET_REPS":
@@ -39,8 +29,6 @@ const reducer = (state, action) => {
       return { ...state, notes: action.payload };
     case "SET_WORKOUT_HISTORY":
       return { ...state, workout_history: [...action.payload, ...state.workout_history] };
-    // case "SET_TIMER_DISPLAY":
-    //   return { ...state, timerDisplay: formatTime(state.timer) };
     default:
       return state;
   }
@@ -53,29 +41,10 @@ const ExercisePage = ({ navigation, route }) => {
   useEffect(() => {
     const fetchHistory = async () => {
       const history = await get_history(exercise.id);
-      console.log("history", history);
       dispatch({ type: "SET_WORKOUT_HISTORY", payload: history });
     };
     fetchHistory();
   }, []);
-  // console.log(exercise);
-  // const handleTimerToggle = () => {
-  //   if (state.isTimerRunning) {
-  //     dispatch({ type: "SET_TIMER", payload: 0 });
-  //     dispatch({ type: "SET_TIMER_DISPLAY", payload: "00:00" });
-  //     dispatch({ type: "SET_IS_TIMER_RUNNING", payload: false });
-  //   } else {
-  //     dispatch({ type: "SET_IS_TIMER_RUNNING", payload: true });
-  //     startTimer();
-  //   }
-  // };
-
-  // const startTimer = () => {
-  //   setInterval(() => {
-  //     dispatch({ type: "SET_TIMER" });
-  //     dispatch({ type: "SET_TIMER_DISPLAY" });
-  //   }, 1000);
-  // };
 
   const handleFormSubmit = () => {
     const date = new Date();
@@ -102,17 +71,6 @@ const ExercisePage = ({ navigation, route }) => {
     dispatch({ type: "SET_NOTES", payload: "" });
   };
 
-  // const renderWorkoutItem = ({ item }) => (
-  //   <View>
-  //     <Text>Date: {item.date}</Text>
-  //     <Text>Weight: {item.weight}</Text>
-  //     <Text>Reps: {item.reps}</Text>
-  //     <Text>RPE: {item.rpe}</Text>
-  //     <Text>Alternate Name: {item.alt_name}</Text>
-  //     <Text>Notes: {item.notes}</Text>
-  //   </View>
-  // );
-
   return (
     <ScrollView>
       <View>
@@ -137,40 +95,43 @@ const ExercisePage = ({ navigation, route }) => {
           </View>
         </View>
       </View>
-      {/* <View>
-        <View style={{ backgroundColor: "rgba(255, 255, 255, .1)", padding: 20 }}>
-          <Button title={state.isTimerRunning ? "Pause Timer" : "Start Timer"} onPress={handleTimerToggle} />
-        </View>
-        <Text style={{ color: colors.text }}>{state.timerDisplay}</Text>
-      </View> */}
+      <Timer />
       <View>
+        <Text style={{ color: colors.text, ...styles.label }}>Weight:</Text>
         <TextInput
           style={styles.workoutInput}
           inputMode='numeric'
           placeholder='Weight'
+          selectTextOnFocus={true}
           value={state.weight}
           onChangeText={(text) => dispatch({ type: "SET_WEIGHT", payload: text })}
         />
+        <Text style={{ color: colors.text, ...styles.label }}>Reps:</Text>
         <TextInput
           style={styles.workoutInput}
           inputMode='numeric'
+          selectTextOnFocus={true}
           placeholder='Reps'
           value={state.reps}
           onChangeText={(text) => dispatch({ type: "SET_REPS", payload: text })}
         />
+        <Text style={{ color: colors.text, ...styles.label }}>RPE:</Text>
         <TextInput
           style={styles.workoutInput}
           inputMode='numeric'
+          selectTextOnFocus={true}
           placeholder='RPE'
           value={state.rpe}
           onChangeText={(text) => dispatch({ type: "SET_RPE", payload: text })}
         />
+        <Text style={{ color: colors.text, ...styles.label }}>Alt Exercise Name:</Text>
         <TextInput
           style={styles.workoutInput}
           placeholder='Alternate Name'
           value={state.alt_name}
           onChangeText={(text) => dispatch({ type: "SET_ALT_NAME", payload: text })}
         />
+        <Text style={{ color: colors.text, ...styles.label }}>Notes:</Text>
         <TextInput
           style={{ ...styles.workoutInput, ...styles.textArea }}
           value={state.notes}
@@ -183,13 +144,6 @@ const ExercisePage = ({ navigation, route }) => {
         </View>
       </View>
       <ExerciseHistory history={state.workout_history} />
-      {/* <View>
-        <FlatList
-          data={state.workout_history}
-          renderItem={renderWorkoutItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View> */}
     </ScrollView>
   );
 };
@@ -205,5 +159,8 @@ const styles = {
   },
   textArea: {
     height: 100,
+  },
+  label: {
+    marginBottom: 5,
   },
 };
