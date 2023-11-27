@@ -3,6 +3,7 @@ import { View, Text, Button, TextInput, FlatList, ScrollView } from "react-nativ
 import { useTheme } from "@react-navigation/native";
 import { add_completed_exercise } from "../controllers/set_exercise";
 import { get_history } from "../controllers/get_exercise_history";
+import ExerciseHistory from "./components/exercise_history";
 
 const initialState = {
   // timer: 0,
@@ -13,7 +14,7 @@ const initialState = {
   rpe: "",
   alt_name: "",
   notes: "",
-  workoutHistory: [],
+  workout_history: [],
 };
 // const formatTime = (time) => {
 //   const minutes = Math.floor(time / 60);
@@ -37,7 +38,7 @@ const reducer = (state, action) => {
     case "SET_NOTES":
       return { ...state, notes: action.payload };
     case "SET_WORKOUT_HISTORY":
-      return { ...state, workoutHistory: action.payload };
+      return { ...state, workout_history: [...action.payload, ...state.workout_history] };
     // case "SET_TIMER_DISPLAY":
     //   return { ...state, timerDisplay: formatTime(state.timer) };
     default:
@@ -77,6 +78,11 @@ const ExercisePage = ({ navigation, route }) => {
   // };
 
   const handleFormSubmit = () => {
+    const date = new Date();
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const formattedDate = `${date.toLocaleDateString("en-US", options)} - ${date.toLocaleDateString("en-US", {
+      weekday: "long",
+    })}`;
     const workout = {
       weight: state.weight,
       reps: state.reps,
@@ -85,9 +91,10 @@ const ExercisePage = ({ navigation, route }) => {
       notes: state.notes.trim(),
       type: "working",
       workout_id: exercise.id,
+      date: formattedDate,
     };
     add_completed_exercise(workout);
-    // dispatch((prevState) => ({ type: "SET_WORKOUT_HISTORY", payload: [...prevState.workoutHistory, workout] }));
+    dispatch({ type: "SET_WORKOUT_HISTORY", payload: [workout] });
     dispatch({ type: "SET_WEIGHT", payload: "" });
     dispatch({ type: "SET_REPS", payload: "" });
     dispatch({ type: "SET_RPE", payload: "" });
@@ -175,9 +182,10 @@ const ExercisePage = ({ navigation, route }) => {
           <Button title='Submit' onPress={handleFormSubmit} />
         </View>
       </View>
+      <ExerciseHistory history={state.workout_history} />
       {/* <View>
         <FlatList
-          data={state.workoutHistory}
+          data={state.workout_history}
           renderItem={renderWorkoutItem}
           keyExtractor={(item, index) => index.toString()}
         />
