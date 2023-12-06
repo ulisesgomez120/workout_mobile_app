@@ -95,7 +95,7 @@ const ExercisePage = ({ navigation, route }) => {
           </View>
         </View>
       </View>
-      <Timer />
+      {/* <Timer /> */}
       <View>
         <Text style={{ color: colors.text, ...styles.label }}>Weight:</Text>
         <TextInput

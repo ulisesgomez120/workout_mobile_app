@@ -1,3 +1,4 @@
+import { register } from "./src/serviceWorkerRegistration";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
@@ -8,6 +9,7 @@ import Exercises from "./views/exercises";
 import Exercise from "./views/exercise";
 
 const Stack = createNativeStackNavigator();
+register();
 
 export default function App() {
   const scheme = useColorScheme();
